@@ -1,0 +1,154 @@
+# Thermo-Agent System Configuration
+system:
+  name: "ThermoSys"
+  version: "1.0.0"
+  mode: "paper_trading"  # backtest, paper_trading, live
+  timezone: "Asia/Shanghai"
+  log_level: "INFO"
+  
+# Data Sources
+data_sources:
+  eastmoney:
+    enabled: true
+    base_url: "https://push2.eastmoney.com/api/"
+    rate_limit: 10  # requests per second
+  
+  xueqiu:
+    enabled: true
+    base_url: "https://stock.xueqiu.com/v5/stock/"
+    rate_limit: 5
+  
+  baidu_index:
+    enabled: true
+    keywords:
+      - "股票开户"
+      - "牛市"
+      - "涨停"
+      - "割肉"
+      - "跌停"
+      - "清仓"
+  
+  guba:
+    enabled: true
+    base_url: "https://guba.eastmoney.com/"
+    rate_limit: 3
+
+# Thermodynamic State Parameters
+thermo_state:
+  sectors:
+    - "半导体"
+    - "新能源"
+    - "医药"
+    - "白酒"
+    - "银行"
+    - "地产"
+    - "AI"
+    - "煤炭"
+    - "钢铁"
+    - "汽车"
+  
+  investor_groups:
+    - "institution"
+    - "retail"
+    - "foreign"
+    - "hot_money"
+  
+  lookback_window: 60
+  zscore_window: 20
+  
+  # RSI (Retail Sentiment Index) weights
+  rsi_weights:
+    margin_balance_change: 0.35
+    small_order_flow: 0.25
+    new_account_growth: 0.20
+    search_index_change: 0.15
+    option_pcr: 0.05
+  
+  # IPV (Information Propagation Velocity) parameters
+  ipv:
+    alpha: 0.4  # mentions weight
+    beta: 0.3   # engagement weight
+    gamma: 0.3  # volume change weight
+    diffusion_coefficient: 0.5
+    max_lag_hours: 24
+    r0_threshold: 2.0
+    velocity_percentile: 90
+  
+  # Coherence Force parameters
+  coherence:
+    entropy_window: 5
+    order_param_threshold: 0.6
+    resonance_window: 20
+    resonance_threshold: 0.5
+
+# Agent Configuration
+agent:
+  state_dim: 47  # 3 global + 10 sectors + 4 groups + 2 entropy = 19, expanded with history
+  action_dim: 1  # position ratio [-1, 1]
+  hidden_dim: 256
+  
+  world_model:
+    lr: 1e-4
+    batch_size: 256
+    update_freq: 1  # days
+    uncertainty_penalty: 0.1
+  
+  policy:
+    actor_lr: 3e-5
+    critic_lr: 1e-4
+    gamma: 0.99
+    tau: 0.005
+    buffer_size: 100000
+    batch_size: 256
+    update_freq: 5  # days
+    
+  meta_controller:
+    n_regimes: 4
+    adaptation_steps: 5
+    meta_lr: 1e-4
+    inner_lr: 1e-3
+    regime_switch_window: 50
+  
+  # Thermo-shaped reward parameters
+  reward:
+    lambda_coherence: 0.3
+    lambda_entropy: 0.2
+    clarity_penalty_factor: 5.0
+    max_position_in_chaos: 0.3
+
+# Meta-Cognition
+meta_cognition:
+  reflection:
+    enabled: true
+    schedule: "weekly"  # daily, weekly, monthly
+    min_episodes: 20
+    llm_endpoint: "http://localhost:8000/v1/chat/completions"
+  
+  evolution:
+    enabled: true
+    auto_execute: false  # require manual approval for code changes
+    ab_test_window: 100
+    improvement_threshold: 0.1  # sharpe improvement required
+    
+# Backtest
+backtest:
+  start_date: "2019-01-01"
+  end_date: "2024-12-31"
+  initial_capital: 10000000  # 10M CNY
+  commission: 0.0003
+  slippage: 0.001
+  
+# Dashboard
+dashboard:
+  port: 8050
+  host: "0.0.0.0"
+  refresh_interval: 30000  # ms
+  
+# Distributed Training
+distributed:
+  enabled: false
+  world_size: 8
+  policy_workers: 4
+  world_model_workers: 2
+  reflection_rank: 6
+  evolution_rank: 7
