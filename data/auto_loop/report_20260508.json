@@ -1,0 +1,34 @@
+{
+  "date": "2026-05-08T02:59:48.138050",
+  "signals": [
+    {
+      "symbol": "000001",
+      "action": "持有",
+      "confidence": 0.5,
+      "reasoning": "暂无明确信号，建议持有观望"
+    },
+    {
+      "symbol": "000002",
+      "action": "持有",
+      "confidence": 0.5,
+      "reasoning": "暂无明确信号，建议持有观望"
+    },
+    {
+      "symbol": "600000",
+      "action": "持有",
+      "confidence": 0.5,
+      "reasoning": "暂无明确信号，建议持有观望"
+    }
+  ],
+  "backtest": {
+    "sharpe_ratio": -0.3934349919882419,
+    "total_return": -0.002110217467977016,
+    "max_drawdown": -0.009857351198827895,
+    "signal_count": 87
+  },
+  "current_params": {
+    "stop_loss": -0.05,
+    "take_profit": 0.15,
+    "min_confidence": 0.7
+  }
+}

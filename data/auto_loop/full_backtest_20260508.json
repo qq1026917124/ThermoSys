@@ -1,0 +1,30 @@
+{
+  "backtest_period": "2026-02-16 02:56:24.192744 ~ 2026-05-08 02:56:24.192744",
+  "total_days": 60,
+  "performance": {
+    "total_return": 0.017838687905921136,
+    "annualized_return": 0.07844560669869782,
+    "sharpe_ratio": 0.7085551231379341,
+    "max_drawdown": -0.04035953595531303,
+    "volatility": 0.11071206325591075
+  },
+  "walk_forward": {
+    "avg_sharpe": NaN,
+    "avg_return": NaN,
+    "consistency": NaN,
+    "total_windows": 0
+  },
+  "trades": {
+    "total": 27,
+    "avg_confidence": 0.7981481481481482,
+    "total_cost": 2855.5726142342237
+  },
+  "signals": {
+    "high_conf_signals": 3,
+    "med_conf_signals": 48,
+    "low_conf_signals": 126,
+    "buy_signals": 18,
+    "sell_signals": 33,
+    "hold_signals": 126
+  }
+}

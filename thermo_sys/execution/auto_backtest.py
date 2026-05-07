@@ -332,9 +332,10 @@ class AutoBacktestEngine:
         
         # 绩效指标
         total_return = (values_df['total_value'].iloc[-1] / self.config.initial_capital) - 1
-        annual_return = (1 + total_return) ** (252 / len(values_df)) - 1
-        volatility = values_df['returns'].std() * np.sqrt(252)
-        sharpe = annual_return / (volatility + 1e-8)
+        n_days = len(values_df)
+        annual_return = (1 + total_return) ** (252 / max(n_days, 1)) - 1 if n_days > 0 else 0
+        volatility = values_df['returns'].std() * np.sqrt(252) if len(values_df['returns'].dropna()) > 1 else 0
+        sharpe = annual_return / (volatility + 1e-8) if volatility > 0 else 0
         
         # 最大回撤
         cummax = values_df['total_value'].cummax()

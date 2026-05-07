@@ -1,0 +1,197 @@
+2026-05-08 02:59:47.915 | INFO     | __main__:run_daily_task:36 - ======================================================================
+2026-05-08 02:59:47.915 | INFO     | __main__:run_daily_task:37 - ThermoSys 每日任务开始 - 2026-05-08 02:59:47.915800
+2026-05-08 02:59:47.915 | INFO     | __main__:run_daily_task:38 - ======================================================================
+2026-05-08 02:59:47.936 | INFO     | thermo_sys.execution.end_to_end_loop:__init__:84 - 全自动策略进化系统初始化完成
+2026-05-08 02:59:47.938 | INFO     | __main__:run_daily_task:79 - 运行每日策略循环...
+2026-05-08 02:59:47.939 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:123 - ======================================================================
+2026-05-08 02:59:47.939 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:124 - 【2026-05-08】每日策略循环
+2026-05-08 02:59:47.939 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:125 - ======================================================================
+2026-05-08 02:59:47.939 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:134 - 生成 3 个交易信号
+2026-05-08 02:59:47.939 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:139 - 运行回测验证...
+2026-05-08 02:59:47.947 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:47.949 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:47.950 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:47.951 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:47.952 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:47.954 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:47.961 | WARNING  | thermo_sys.execution.end_to_end_loop:run_daily_cycle:147 - 信号质量下降，触发参数优化...
+2026-05-08 02:59:47.962 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:67 - 开始策略参数优化，目标指标: sharpe_ratio
+2026-05-08 02:59:47.962 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:68 - 参数空间: 81 种组合
+2026-05-08 02:59:47.962 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 1/8: {'stop_loss': -0.05, 'take_profit': 0.2, 'min_confidence': 0.5, 'max_single_position': 0.4}
+2026-05-08 02:59:47.970 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:47.972 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:47.972 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:47.974 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:47.975 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:47.978 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:47.986 | SUCCESS  | thermo_sys.execution.strategy_optimizer:optimize:105 - 发现更优参数！得分: -0.594
+2026-05-08 02:59:47.986 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 2/8: {'stop_loss': -0.07, 'take_profit': 0.1, 'min_confidence': 0.7, 'max_single_position': 0.3}
+2026-05-08 02:59:47.995 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 600000 触发止损: -8.31%
+2026-05-08 02:59:47.998 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 000001 触发止损: -8.02%
+2026-05-08 02:59:47.998 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-27 02:59:47.936310 600000 触发止损: -8.13%
+2026-05-08 02:59:48.007 | SUCCESS  | thermo_sys.execution.strategy_optimizer:optimize:105 - 发现更优参数！得分: 0.369
+2026-05-08 02:59:48.007 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 3/8: {'stop_loss': -0.1, 'take_profit': 0.1, 'min_confidence': 0.7, 'max_single_position': 0.2}
+2026-05-08 02:59:48.017 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-15 02:59:47.936310 600000 触发止损: -10.53%
+2026-05-08 02:59:48.029 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 4/8: {'stop_loss': -0.1, 'take_profit': 0.1, 'min_confidence': 0.6, 'max_single_position': 0.2}
+2026-05-08 02:59:48.036 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:48.038 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:48.039 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:48.040 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:48.040 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.043 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.050 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 5/8: {'stop_loss': -0.1, 'take_profit': 0.15, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.060 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-15 02:59:47.936310 600000 触发止损: -10.53%
+2026-05-08 02:59:48.072 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 6/8: {'stop_loss': -0.07, 'take_profit': 0.15, 'min_confidence': 0.7, 'max_single_position': 0.2}
+2026-05-08 02:59:48.081 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 600000 触发止损: -8.31%
+2026-05-08 02:59:48.084 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 000001 触发止损: -8.02%
+2026-05-08 02:59:48.084 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-27 02:59:47.936310 600000 触发止损: -8.13%
+2026-05-08 02:59:48.093 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 7/8: {'stop_loss': -0.05, 'take_profit': 0.15, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.102 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.104 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.105 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.114 | SUCCESS  | thermo_sys.execution.strategy_optimizer:optimize:105 - 发现更优参数！得分: 0.420
+2026-05-08 02:59:48.114 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 8/8: {'stop_loss': -0.05, 'take_profit': 0.1, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.123 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.126 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.126 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.136 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:107 - 
+优化完成！最优得分: 0.420
+2026-05-08 02:59:48.137 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:108 - 最优参数: StrategyParameters(stop_loss=-0.05, take_profit=0.15, min_confidence=0.7, max_single_position=0.4, rsi_buy_threshold=-2.0, rsi_sell_threshold=2.0, coherence_buy=0.6, coherence_sell=0.3, clarity_threshold=0.3)
+2026-05-08 02:59:48.137 | INFO     | thermo_sys.execution.end_to_end_loop:_optimize_strategy:384 - 策略参数已优化:
+2026-05-08 02:59:48.137 | INFO     | thermo_sys.execution.end_to_end_loop:_optimize_strategy:385 -   止损: -5%
+2026-05-08 02:59:48.137 | INFO     | thermo_sys.execution.end_to_end_loop:_optimize_strategy:386 -   止盈: 15%
+2026-05-08 02:59:48.137 | INFO     | thermo_sys.execution.end_to_end_loop:_optimize_strategy:387 -   最低置信度: 70%
+2026-05-08 02:59:48.138 | INFO     | thermo_sys.execution.end_to_end_loop:run_daily_cycle:161 - 策略报告已保存: data\auto_loop\report_20260508.json
+2026-05-08 02:59:48.138 | INFO     | __main__:run_daily_task:82 - 生成 3 个信号
+2026-05-08 02:59:48.138 | INFO     | __main__:run_daily_task:84 - 回测夏普: -0.39
+2026-05-08 02:59:48.138 | INFO     | __main__:run_daily_task:88 - 今天是周五，运行每周优化...
+2026-05-08 02:59:48.138 | INFO     | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:173 - ======================================================================
+2026-05-08 02:59:48.138 | INFO     | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:174 - 【每周优化】策略参数调优
+2026-05-08 02:59:48.138 | INFO     | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:175 - ======================================================================
+2026-05-08 02:59:48.139 | INFO     | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:184 - 近期平均信号质量: 0.44
+2026-05-08 02:59:48.139 | WARNING  | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:188 - 信号质量持续下降，执行深度优化...
+2026-05-08 02:59:48.139 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:67 - 开始策略参数优化，目标指标: sharpe_ratio
+2026-05-08 02:59:48.139 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:68 - 参数空间: 81 种组合
+2026-05-08 02:59:48.139 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 1/15: {'stop_loss': -0.07, 'take_profit': 0.15, 'min_confidence': 0.5, 'max_single_position': 0.2}
+2026-05-08 02:59:48.147 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:48.149 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:48.150 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:48.151 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:48.152 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.155 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.162 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 2/15: {'stop_loss': -0.05, 'take_profit': 0.15, 'min_confidence': 0.5, 'max_single_position': 0.4}
+2026-05-08 02:59:48.169 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:48.171 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:48.172 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:48.173 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:48.174 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.177 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.184 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 3/15: {'stop_loss': -0.05, 'take_profit': 0.2, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.193 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.196 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.197 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.206 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 4/15: {'stop_loss': -0.1, 'take_profit': 0.1, 'min_confidence': 0.6, 'max_single_position': 0.3}
+2026-05-08 02:59:48.214 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:48.215 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:48.216 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:48.217 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:48.218 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.220 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.227 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 5/15: {'stop_loss': -0.05, 'take_profit': 0.15, 'min_confidence': 0.5, 'max_single_position': 0.2}
+2026-05-08 02:59:48.234 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:48.236 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:48.237 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:48.238 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:48.239 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.243 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.250 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 6/15: {'stop_loss': -0.05, 'take_profit': 0.15, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.259 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.261 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.262 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.271 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 7/15: {'stop_loss': -0.07, 'take_profit': 0.15, 'min_confidence': 0.7, 'max_single_position': 0.2}
+2026-05-08 02:59:48.281 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 600000 触发止损: -8.31%
+2026-05-08 02:59:48.284 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 000001 触发止损: -8.02%
+2026-05-08 02:59:48.284 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-27 02:59:47.936310 600000 触发止损: -8.13%
+2026-05-08 02:59:48.293 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 8/15: {'stop_loss': -0.07, 'take_profit': 0.2, 'min_confidence': 0.7, 'max_single_position': 0.3}
+2026-05-08 02:59:48.306 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 600000 触发止损: -8.31%
+2026-05-08 02:59:48.323 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 000001 触发止损: -8.02%
+2026-05-08 02:59:48.325 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-27 02:59:47.936310 600000 触发止损: -8.13%
+2026-05-08 02:59:48.341 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 9/15: {'stop_loss': -0.07, 'take_profit': 0.1, 'min_confidence': 0.7, 'max_single_position': 0.4}
+2026-05-08 02:59:48.352 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 600000 触发止损: -8.31%
+2026-05-08 02:59:48.356 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 000001 触发止损: -8.02%
+2026-05-08 02:59:48.357 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-27 02:59:47.936310 600000 触发止损: -8.13%
+2026-05-08 02:59:48.368 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 10/15: {'stop_loss': -0.1, 'take_profit': 0.15, 'min_confidence': 0.5, 'max_single_position': 0.4}
+2026-05-08 02:59:48.376 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:48.378 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:48.379 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:48.381 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:48.382 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.385 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.393 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 11/15: {'stop_loss': -0.05, 'take_profit': 0.1, 'min_confidence': 0.7, 'max_single_position': 0.3}
+2026-05-08 02:59:48.402 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.405 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.406 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.416 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 12/15: {'stop_loss': -0.07, 'take_profit': 0.15, 'min_confidence': 0.6, 'max_single_position': 0.4}
+2026-05-08 02:59:48.423 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:48.425 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:48.426 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:48.427 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:48.427 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.430 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.437 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 13/15: {'stop_loss': -0.1, 'take_profit': 0.1, 'min_confidence': 0.5, 'max_single_position': 0.2}
+2026-05-08 02:59:48.444 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-01 02:59:47.936310 600000 触发止损: -33.38%
+2026-05-08 02:59:48.447 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-09 02:59:47.936310 600000 触发止损: -33.64%
+2026-05-08 02:59:48.449 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.08%
+2026-05-08 02:59:48.451 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-17 02:59:47.936310 600000 触发止损: -52.85%
+2026-05-08 02:59:48.452 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.457 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.464 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 14/15: {'stop_loss': -0.07, 'take_profit': 0.2, 'min_confidence': 0.6, 'max_single_position': 0.4}
+2026-05-08 02:59:48.471 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:48.473 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:48.474 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:48.475 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:48.475 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.478 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.485 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:86 - 
+测试组合 15/15: {'stop_loss': -0.1, 'take_profit': 0.1, 'min_confidence': 0.6, 'max_single_position': 0.4}
+2026-05-08 02:59:48.493 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-02 02:59:47.936310 600000 触发止损: -68.05%
+2026-05-08 02:59:48.494 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-13 02:59:47.936310 000001 触发止损: -69.09%
+2026-05-08 02:59:48.495 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-14 02:59:47.936310 600000 触发止损: -71.56%
+2026-05-08 02:59:48.496 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-20 02:59:47.936310 600000 触发止损: -75.93%
+2026-05-08 02:59:48.497 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000002 触发止损: -47.75%
+2026-05-08 02:59:48.499 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-05-07 02:59:47.936310 600000 触发止损: -68.77%
+2026-05-08 02:59:48.506 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:107 - 
+优化完成！最优得分: 0.420
+2026-05-08 02:59:48.506 | INFO     | thermo_sys.execution.strategy_optimizer:optimize:108 - 最优参数: StrategyParameters(stop_loss=-0.05, take_profit=0.15, min_confidence=0.7, max_single_position=0.4, rsi_buy_threshold=-2.0, rsi_sell_threshold=2.0, coherence_buy=0.6, coherence_sell=0.3, clarity_threshold=0.3)
+2026-05-08 02:59:48.515 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-10 02:59:47.936310 600000 触发止损: -5.75%
+2026-05-08 02:59:48.518 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-22 02:59:47.936310 000001 触发止损: -6.49%
+2026-05-08 02:59:48.519 | INFO     | thermo_sys.execution.auto_backtest:_check_stop_loss_take_profit:267 - 2026-04-24 02:59:47.936310 600000 触发止损: -6.32%
+2026-05-08 02:59:48.528 | INFO     | thermo_sys.execution.end_to_end_loop:run_weekly_optimization:219 - 新参数提升不显著，保持当前参数
+2026-05-08 02:59:48.528 | INFO     | __main__:run_daily_task:90 - 优化应用: True
+2026-05-08 02:59:48.528 | INFO     | __main__:run_daily_task:101 - 近期平均夏普: 0.91
+2026-05-08 02:59:48.528 | INFO     | __main__:run_daily_task:102 - 近期平均质量: 0.44
+2026-05-08 02:59:48.528 | INFO     | __main__:run_daily_task:104 - ======================================================================
+2026-05-08 02:59:48.529 | INFO     | __main__:run_daily_task:105 - 每日任务完成
+2026-05-08 02:59:48.529 | INFO     | __main__:run_daily_task:106 - ======================================================================
