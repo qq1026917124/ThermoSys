@@ -17,6 +17,7 @@ data_sources:
     enabled: true
     base_url: "https://stock.xueqiu.com/v5/stock/"
     rate_limit: 5
+    token: "0ee9255b517a1f364c7182da145250c28d956dc7"
   
   baidu_index:
     enabled: true
