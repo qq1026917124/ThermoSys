@@ -138,7 +138,14 @@ class SystemHealthMonitor:
             else:
                 scores.append(weight * 20)
         
-        return sum(scores) / sum(weights.values()) * 100 if scores else 50.0
+        if not scores:
+            return 50.0
+        
+        # 计算加权平均
+        total_weighted_score = sum(scores)
+        total_weight = sum(weights[m] for m in weights if m in self.metrics and len(self.metrics[m]) >= 10)
+        
+        return min(100, max(0, total_weighted_score / total_weight)) if total_weight > 0 else 50.0
     
     def generate_alert(self) -> List[Dict[str, str]]:
         """生成异常告警"""
