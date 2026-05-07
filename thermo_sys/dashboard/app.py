@@ -386,11 +386,10 @@ class ThermoDashboard:
     def run(self, debug: bool = False, use_reloader: bool = False):
         """启动面板"""
         logger.info(f"Starting dashboard on port {self.port}")
-        self.app.run_server(
+        self.app.run(
             host='0.0.0.0',
             port=self.port,
-            debug=debug,
-            use_reloader=use_reloader
+            debug=debug
         )
     
     def generate_static_report(self, output_path: str = 'dashboard_report.html'):

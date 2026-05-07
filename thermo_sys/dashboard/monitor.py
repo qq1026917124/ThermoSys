@@ -240,7 +240,7 @@ class ThermoDashboard:
         """启动面板服务器"""
         self.app = self._create_app()
         if self.app:
-            self.app.run_server(host='0.0.0.0', port=self.port, debug=debug)
+            self.app.run(host='0.0.0.0', port=self.port, debug=debug)
     
     def generate_static_report(self, output_path: str = 'report.html'):
         """生成静态HTML报告"""
