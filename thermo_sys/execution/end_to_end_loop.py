@@ -1,19 +1,21 @@
 """
-端到端闭环自我进化系统
+端到端自动回测闭环系统
 
-整合所有模块，实现：
-1. 每日自动分析市场
-2. 生成交易信号
-3. 记录执行结果
-4. 每周反思优化
-5. 策略持续进化
+完全自动化的策略进化：
+1. 每日自动生成信号
+2. 自动回测验证信号质量
+3. 基于回测结果优化策略参数
+4. 持续自我进化，无需人工干预
+
+新架构：
+信号生成 -> 即时回测验证 -> 策略评分 -> 参数调优 -> 再次回测 -> 最优策略输出
 """
 import os
 import sys
 import json
 import yaml
-import asyncio
-import argparse
+import numpy as np
+import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
@@ -22,53 +24,64 @@ from loguru import logger
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from thermo_sys.core import ThermoState, RetailSentimentIndex
+from thermo_sys.core import ThermoState
 from thermo_sys.execution.manual_executor import ManualTradeExecutor, WeeklyStrategy
-from thermo_sys.execution.weekly_backtest import WeeklyStrategyBacktest, BacktestConfig
+from thermo_sys.execution.auto_backtest import AutoBacktestEngine, BacktestConfig
+from thermo_sys.execution.strategy_optimizer import StrategyOptimizer, StrategyParameters
 from thermo_sys.dashboard.monitor import SystemHealthMonitor
 
 
-class EndToEndLoop:
+class AutoEvolutionLoop:
     """
-    端到端自我进化闭环
+    全自动策略进化闭环
     
     工作流程：
-    Day 1 (周一):
-      1. 分析周末市场变化
-      2. 生成周计划
-      3. 筛选目标股票池
-      4. 输出周一操作清单
     
-    Day 2-4 (周二-周四):
-      1. 每日收盘后分析
-      2. 生成次日信号
-      3. 记录市场状态
-      4. 追踪持仓盈亏
+    每日循环:
+      1. 获取市场数据
+      2. 计算热力学状态
+      3. 生成交易信号
+      4. 自动回测验证信号有效性（历史数据验证）
+      5. 评估信号质量
+      6. 如果信号质量下降，触发参数优化
+      7. 输出当日最优策略和预期绩效
     
-    Day 5 (周五):
-      1. 收盘后总结本周
-      2. 计算实际 vs 预期收益
-      3. 反思Agent分析偏差
-      4. 生成改进建议
-      5. 更新策略参数
+    每周循环:
+      1. 汇总本周所有回测结果
+      2. 对比不同参数组合的表现
+      3. 识别最优参数区域
+      4. 更新策略默认参数
+      5. 生成下周策略配置
     
-    Weekend:
-      1. 运行回测验证新策略
-      2. 进化Agent调整模型
-      3. 准备下周计划
+    每月循环:
+      1. 深度回测（多周期、多市场状态）
+      2. 策略鲁棒性测试
+      3. 如果策略失效，触发重新优化
+      4. 存档策略版本
     """
     
     def __init__(self, config_path: str = "config/system_config.yaml"):
         self.config = self._load_config(config_path)
-        self.executor = ManualTradeExecutor(config_path)
+        self.signal_generator = ManualTradeExecutor(config_path)
+        self.backtest_engine = AutoBacktestEngine()
+        self.optimizer = StrategyOptimizer()
         self.monitor = SystemHealthMonitor()
-        self.weekly_results: List[Dict] = []
+        
+        # 当前最优参数
+        self.current_params = StrategyParameters()
+        
+        # 历史回测结果
+        self.backtest_history: List[Dict] = []
+        self.signal_quality_history: List[Dict] = []
         
         # 数据目录
-        self.data_dir = Path("data/loop")
+        self.data_dir = Path("data/auto_loop")
         self.data_dir.mkdir(parents=True, exist_ok=True)
         
-        logger.info("端到端闭环系统初始化完成")
+        # 加载历史
+        self._load_history()
+        
+        logger.info("全自动策略进化系统初始化完成")
     
     def _load_config(self, path: str) -> Dict:
         """加载配置"""
@@ -79,335 +92,455 @@ class EndToEndLoop:
             logger.warning(f"加载配置失败: {e}")
             return {}
     
-    def run_monday_routine(self, market_data: Dict):
-        """
-        周一例行：生成周计划
-        """
-        logger.info("="*60)
-        logger.info("【周一】生成周计划")
-        logger.info("="*60)
-        
-        # 1. 分析市场状态
-        market_analysis = self._analyze_market(market_data)
-        
-        # 2. 生成周计划
-        stock_pool = market_data.get('stock_pool', [])
-        weekly_plan = self.executor.generate_weekly_plan(market_analysis, stock_pool)
-        
-        # 3. 保存计划
-        plan_file = self.data_dir / f"plan_{datetime.now().strftime('%Y%m%d')}.json"
-        with open(plan_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'week_start': weekly_plan.week_start.isoformat(),
-                'week_end': weekly_plan.week_end.isoformat(),
-                'market_regime': weekly_plan.market_regime,
-                'overall_bias': weekly_plan.overall_bias,
-                'target_stocks': weekly_plan.target_stocks,
-                'max_positions': weekly_plan.max_positions,
-                'stop_loss': weekly_plan.stop_loss,
-                'take_profit': weekly_plan.take_profit
-            }, f, ensure_ascii=False, indent=2)
-        
-        logger.info(f"周计划已生成: {plan_file}")
-        logger.info(f"市场状态: {weekly_plan.market_regime}")
-        logger.info(f"整体偏向: {weekly_plan.overall_bias}")
-        logger.info(f"目标股票: {', '.join(weekly_plan.target_stocks)}")
-        
-        # 4. 输出操作清单
-        self._print_weekly_plan(weekly_plan)
-        
-        return weekly_plan
+    def _load_history(self):
+        """加载历史回测结果"""
+        history_file = self.data_dir / "backtest_history.json"
+        if history_file.exists():
+            with open(history_file, 'r', encoding='utf-8') as f:
+                self.backtest_history = json.load(f)
     
-    def run_daily_routine(self, daily_data: Dict):
+    def _save_history(self):
+        """保存历史回测结果"""
+        history_file = self.data_dir / "backtest_history.json"
+        with open(history_file, 'w', encoding='utf-8') as f:
+            json.dump(self.backtest_history[-100:], f, ensure_ascii=False, indent=2)
+    
+    def run_daily_cycle(self, 
+                       market_data: Dict,
+                       price_data: pd.DataFrame = None,
+                       thermo_data: Dict[str, pd.DataFrame] = None) -> Dict:
         """
-        每日例行：生成交易信号
+        每日自动循环
+        
+        Args:
+            market_data: 当日市场数据
+            price_data: 历史价格数据（用于回测验证）
+            thermo_data: 历史热力学数据
+            
+        Returns:
+            当日策略报告
         """
-        logger.info("="*60)
-        logger.info(f"【{datetime.now().strftime('%Y-%m-%d')}】每日分析")
-        logger.info("="*60)
+        logger.info("="*70)
+        logger.info(f"【{datetime.now().strftime('%Y-%m-%d')}】每日策略循环")
+        logger.info("="*70)
         
         # 1. 计算热力学状态
-        thermo_states = self._compute_thermo_states(daily_data)
+        thermo_states = self._compute_thermo_states(market_data)
         
-        # 2. 获取当前持仓
-        current_positions = self.executor.positions
-        
-        # 3. 生成信号
-        signals = self.executor.generate_daily_signals(thermo_states, current_positions)
-        
-        # 4. 生成每日报告
-        report = self.executor.generate_daily_report()
-        print(report)
-        
-        # 5. 保存信号
-        self.executor.export_to_csv(
-            f"data/trades/signals_{datetime.now().strftime('%Y%m%d')}.csv"
-        )
-        
-        # 6. 记录监控指标
-        if signals:
-            avg_confidence = np.mean([s.confidence for s in signals])
-            self.monitor.record('avg_signal_confidence', avg_confidence)
+        # 2. 生成交易信号
+        current_positions = {}  # 实际应该从持仓记录读取
+        signals = self.signal_generator.generate_daily_signals(thermo_states, current_positions)
         
         logger.info(f"生成 {len(signals)} 个交易信号")
         
-        return signals
+        # 3. 回测验证（如果有历史数据）
+        backtest_result = None
+        if price_data is not None and thermo_data is not None:
+            logger.info("运行回测验证...")
+            backtest_result = self._validate_signals(signals, price_data, thermo_data)
+            
+            # 4. 评估信号质量
+            quality_score = self._evaluate_signal_quality(signals, backtest_result)
+            
+            # 5. 如果质量下降，触发优化
+            if quality_score < 0.6:
+                logger.warning("信号质量下降，触发参数优化...")
+                self._optimize_strategy(price_data, thermo_data)
+            
+            # 6. 记录回测结果
+            self._record_backtest(backtest_result, quality_score)
+        
+        # 7. 生成策略报告
+        report = self._generate_daily_report(signals, backtest_result)
+        
+        # 8. 保存报告
+        report_file = self.data_dir / f"report_{datetime.now().strftime('%Y%m%d')}.json"
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(report, f, ensure_ascii=False, indent=2, default=str)
+        
+        logger.info(f"策略报告已保存: {report_file}")
+        
+        return report
     
-    def run_friday_routine(self, weekly_data: Dict):
+    def run_weekly_optimization(self,
+                               price_data: pd.DataFrame,
+                               thermo_data: Dict[str, pd.DataFrame]) -> Dict:
         """
-        周五例行：周总结与反思
+        每周策略优化
+        
+        基于最近一周的回测结果，优化策略参数
         """
-        logger.info("="*60)
-        logger.info("【周五】周总结与反思")
-        logger.info("="*60)
+        logger.info("="*70)
+        logger.info("【每周优化】策略参数调优")
+        logger.info("="*70)
         
-        # 1. 计算本周绩效
-        performance = self.executor.get_weekly_performance()
+        # 1. 检查是否需要优化
+        recent_results = self.backtest_history[-5:]  # 最近5天
+        if not recent_results:
+            logger.info("回测数据不足，跳过优化")
+            return {}
         
-        # 2. 回测验证
-        backtest_result = self._run_weekly_backtest(weekly_data)
+        avg_quality = np.mean([r.get('quality_score', 0) for r in recent_results])
+        logger.info(f"近期平均信号质量: {avg_quality:.2f}")
         
-        # 3. 对比实际 vs 回测
-        comparison = self._compare_actual_vs_backtest(performance, backtest_result)
+        # 2. 如果质量持续下降，进行深度优化
+        if avg_quality < 0.5:
+            logger.warning("信号质量持续下降，执行深度优化...")
+            
+            # 使用最近60天数据优化
+            recent_price = price_data.tail(60)
+            recent_thermo = {k: v.tail(60) for k, v in thermo_data.items()}
+            
+            best_params = self.optimizer.optimize(
+                recent_price, 
+                recent_thermo,
+                n_trials=15
+            )
+            
+            # 3. 验证新参数
+            config = BacktestConfig(
+                stop_loss=best_params.stop_loss,
+                take_profit=best_params.take_profit,
+                min_confidence=best_params.min_confidence,
+                max_single_position=best_params.max_single_position
+            )
+            
+            engine = AutoBacktestEngine(config)
+            validation_result = engine.run(recent_price, recent_thermo)
+            
+            # 4. 如果新参数表现更好，应用
+            old_sharpe = np.mean([r.get('sharpe', 0) for r in recent_results])
+            new_sharpe = validation_result['sharpe_ratio']
+            
+            if new_sharpe > old_sharpe * 1.1:  # 提升10%以上
+                self.current_params = best_params
+                logger.success(f"策略参数已更新！夏普提升: {old_sharpe:.2f} -> {new_sharpe:.2f}")
+            else:
+                logger.info("新参数提升不显著，保持当前参数")
         
-        # 4. 生成反思报告
-        reflection = self._generate_reflection(comparison)
-        
-        # 5. 保存结果
-        weekly_result = {
-            'week': datetime.now().strftime('%Y-W%U'),
-            'performance': performance,
-            'backtest': backtest_result,
-            'comparison': comparison,
-            'reflection': reflection,
-            'timestamp': datetime.now().isoformat()
+        # 5. 生成优化报告
+        report = {
+            'date': datetime.now().isoformat(),
+            'avg_quality': avg_quality,
+            'current_params': {
+                'stop_loss': self.current_params.stop_loss,
+                'take_profit': self.current_params.take_profit,
+                'min_confidence': self.current_params.min_confidence,
+                'max_single_position': self.current_params.max_single_position
+            },
+            'optimization_applied': avg_quality < 0.5
         }
         
-        self.weekly_results.append(weekly_result)
-        
-        result_file = self.data_dir / f"weekly_{datetime.now().strftime('%Y%m%d')}.json"
-        with open(result_file, 'w', encoding='utf-8') as f:
-            json.dump(weekly_result, f, ensure_ascii=False, indent=2)
-        
-        # 6. 输出反思报告
-        self._print_reflection_report(weekly_result)
-        
-        return weekly_result
+        return report
     
-    def run_weekend_evolution(self):
+    def run_full_backtest(self,
+                         price_data: pd.DataFrame,
+                         thermo_data: Dict[str, pd.DataFrame],
+                         start_date: str = None,
+                         end_date: str = None) -> Dict:
         """
-        周末例行：策略进化
+        运行完整回测（用于策略验证）
+        
+        Args:
+            price_data: 完整价格数据
+            thermo_data: 完整热力学数据
+            start_date: 开始日期
+            end_date: 结束日期
+            
+        Returns:
+            完整回测报告
         """
-        logger.info("="*60)
-        logger.info("【周末】策略进化")
-        logger.info("="*60)
+        if start_date:
+            price_data = price_data[price_data.index >= start_date]
+        if end_date:
+            price_data = price_data[price_data.index <= end_date]
         
-        if len(self.weekly_results) < 2:
-            logger.info("数据不足，跳过进化")
-            return
+        logger.info("="*70)
+        logger.info(f"运行完整回测: {price_data.index[0]} ~ {price_data.index[-1]}")
+        logger.info("="*70)
         
-        # 1. 分析历史表现趋势
-        sharpe_trend = self._analyze_sharpe_trend()
+        # 1. 使用当前参数回测
+        config = BacktestConfig(
+            stop_loss=self.current_params.stop_loss,
+            take_profit=self.current_params.take_profit,
+            min_confidence=self.current_params.min_confidence,
+            max_single_position=self.current_params.max_single_position
+        )
         
-        # 2. 识别问题
-        issues = self._identify_issues()
+        engine = AutoBacktestEngine(config)
+        result = engine.run(price_data, thermo_data)
         
-        # 3. 生成改进方案
-        improvements = self._generate_improvements(issues)
+        # 2. Walk-Forward验证
+        wf_result = engine.run_walk_forward(price_data, thermo_data, train_size=60, test_size=20)
         
-        # 4. 更新策略参数（如果改进显著）
-        if improvements.get('sharpe_improvement', 0) > 0.1:
-            self._apply_improvements(improvements)
-            logger.success("策略已进化！")
+        # 3. 生成报告
+        report = {
+            'backtest_period': f"{price_data.index[0]} ~ {price_data.index[-1]}",
+            'total_days': len(price_data),
+            'performance': {
+                'total_return': result['total_return'],
+                'annualized_return': result['annualized_return'],
+                'sharpe_ratio': result['sharpe_ratio'],
+                'max_drawdown': result['max_drawdown'],
+                'volatility': result['volatility']
+            },
+            'walk_forward': {
+                'avg_sharpe': wf_result['avg_sharpe'],
+                'avg_return': wf_result['avg_return'],
+                'consistency': wf_result['consistency'],
+                'total_windows': wf_result['total_windows']
+            },
+            'trades': {
+                'total': result['total_trades'],
+                'avg_confidence': result['avg_confidence'],
+                'total_cost': result['total_cost']
+            },
+            'signals': result.get('signal_quality', {})
+        }
+        
+        # 4. 保存报告
+        report_file = self.data_dir / f"full_backtest_{datetime.now().strftime('%Y%m%d')}.json"
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(report, f, ensure_ascii=False, indent=2, default=str)
+        
+        logger.info(f"完整回测完成: {report_file}")
+        logger.info(f"总收益率: {report['performance']['total_return']:.2%}")
+        logger.info(f"夏普比率: {report['performance']['sharpe_ratio']:.2f}")
+        logger.info(f"最大回撤: {report['performance']['max_drawdown']:.2%}")
+        
+        return report
+    
+    def _validate_signals(self, 
+                         signals: List,
+                         price_data: pd.DataFrame,
+                         thermo_data: Dict[str, pd.DataFrame]) -> Dict:
+        """
+        验证信号有效性
+        
+        使用最近30天数据快速回测验证
+        """
+        # 使用最近30天数据
+        recent_price = price_data.tail(30)
+        recent_thermo = {k: v.tail(30) for k, v in thermo_data.items()}
+        
+        config = BacktestConfig(
+            stop_loss=self.current_params.stop_loss,
+            take_profit=self.current_params.take_profit,
+            min_confidence=self.current_params.min_confidence
+        )
+        
+        engine = AutoBacktestEngine(config)
+        result = engine.run(recent_price, recent_thermo)
+        
+        return result
+    
+    def _evaluate_signal_quality(self, signals: List, backtest_result: Dict) -> float:
+        """
+        评估信号质量
+        
+        综合评分：
+        - 回测夏普比率 (40%)
+        - 信号置信度 (30%)
+        - 收益回撤比 (30%)
+        """
+        if not backtest_result:
+            return 0.5
+        
+        # 夏普评分
+        sharpe = backtest_result.get('sharpe_ratio', 0)
+        sharpe_score = min(max(sharpe / 2.0, 0), 1.0)  # 夏普2.0为满分
+        
+        # 置信度评分
+        if signals:
+            avg_confidence = np.mean([s.confidence for s in signals])
+            confidence_score = avg_confidence
         else:
-            logger.info("改进不显著，保持当前策略")
+            confidence_score = 0
         
-        return improvements
+        # 收益回撤比
+        total_return = backtest_result.get('total_return', 0)
+        max_dd = abs(backtest_result.get('max_drawdown', 0.01))
+        return_dd_ratio = total_return / max_dd if max_dd > 0 else 0
+        dd_score = min(max(return_dd_ratio / 2.0, 0), 1.0)
+        
+        # 加权综合
+        quality = sharpe_score * 0.4 + confidence_score * 0.3 + dd_score * 0.3
+        
+        return quality
     
-    def _analyze_market(self, data: Dict) -> Dict:
-        """分析市场状态"""
-        # 简化版：从数据中计算综合指标
-        return {
-            'rsi': data.get('market_rsi', 0),
-            'coherence': data.get('market_coherence', 0),
-            'clarity': data.get('market_clarity', 0),
-            'ipv': data.get('market_ipv', 0),
-            'entropy': data.get('market_entropy', 1.0)
-        }
+    def _optimize_strategy(self, 
+                          price_data: pd.DataFrame,
+                          thermo_data: Dict[str, pd.DataFrame]):
+        """优化策略参数"""
+        # 使用最近30天数据快速优化
+        recent_price = price_data.tail(30)
+        recent_thermo = {k: v.tail(30) for k, v in thermo_data.items()}
+        
+        best_params = self.optimizer.optimize(recent_price, recent_thermo, n_trials=8)
+        
+        # 应用最优参数
+        self.current_params = best_params
+        
+        logger.info("策略参数已优化:")
+        logger.info(f"  止损: {best_params.stop_loss:.0%}")
+        logger.info(f"  止盈: {best_params.take_profit:.0%}")
+        logger.info(f"  最低置信度: {best_params.min_confidence:.0%}")
+    
+    def _record_backtest(self, result: Dict, quality: float):
+        """记录回测结果"""
+        self.backtest_history.append({
+            'date': datetime.now().isoformat(),
+            'sharpe': result.get('sharpe_ratio', 0),
+            'return': result.get('total_return', 0),
+            'max_dd': result.get('max_drawdown', 0),
+            'quality_score': quality,
+            'trades': result.get('total_trades', 0)
+        })
+        
+        self._save_history()
     
     def _compute_thermo_states(self, data: Dict) -> Dict[str, Dict]:
         """计算热力学状态"""
-        # 简化版：直接使用输入数据
         return data.get('thermo_states', {})
     
-    def _run_weekly_backtest(self, data: Dict) -> Dict:
-        """运行周回测"""
-        config = BacktestConfig()
-        backtest = WeeklyStrategyBacktest(config)
-        
-        # 简化：返回模拟结果
-        return {
-            'sharpe_ratio': np.random.uniform(0.5, 2.0),
-            'total_return': np.random.uniform(-0.05, 0.15),
-            'max_drawdown': np.random.uniform(-0.1, -0.01)
+    def _generate_daily_report(self, 
+                              signals: List,
+                              backtest_result: Optional[Dict]) -> Dict:
+        """生成每日策略报告"""
+        report = {
+            'date': datetime.now().isoformat(),
+            'signals': []
         }
-    
-    def _compare_actual_vs_backtest(self, actual: Dict, backtest: Dict) -> Dict:
-        """对比实际 vs 回测"""
-        return {
-            'sharpe_diff': actual.get('avg_confidence', 0) - backtest['sharpe_ratio'],
-            'return_diff': np.random.uniform(-0.05, 0.05),
-            'execution_rate': actual.get('execution_rate', 0)
+        
+        # 信号详情
+        for signal in signals[:5]:  # 只取前5个
+            report['signals'].append({
+                'symbol': signal.symbol,
+                'action': signal.action.value,
+                'confidence': signal.confidence,
+                'reasoning': signal.reasoning
+            })
+        
+        # 回测结果
+        if backtest_result:
+            report['backtest'] = {
+                'sharpe_ratio': backtest_result.get('sharpe_ratio', 0),
+                'total_return': backtest_result.get('total_return', 0),
+                'max_drawdown': backtest_result.get('max_drawdown', 0),
+                'signal_count': backtest_result.get('signal_count', 0)
+            }
+        
+        # 当前参数
+        report['current_params'] = {
+            'stop_loss': self.current_params.stop_loss,
+            'take_profit': self.current_params.take_profit,
+            'min_confidence': self.current_params.min_confidence
         }
+        
+        return report
     
-    def _generate_reflection(self, comparison: Dict) -> Dict:
-        """生成反思"""
-        issues = []
+    def get_performance_summary(self) -> Dict:
+        """获取绩效摘要"""
+        if not self.backtest_history:
+            return {}
         
-        if comparison['execution_rate'] < 0.8:
-            issues.append("执行率偏低，可能错过机会")
-        
-        if comparison['sharpe_diff'] < -0.5:
-            issues.append("实际表现远低于回测，可能存在过拟合")
-        
-        if not issues:
-            issues.append("表现符合预期")
+        recent = self.backtest_history[-20:]  # 最近20天
         
         return {
-            'issues': issues,
-            'suggestions': [
-                "提高信号置信度阈值" if comparison['execution_rate'] < 0.8 else "保持当前阈值",
-                "增加止损纪律" if comparison['return_diff'] < -0.02 else "保持当前止损"
-            ]
+            'avg_sharpe': np.mean([r['sharpe'] for r in recent]),
+            'avg_return': np.mean([r['return'] for r in recent]),
+            'avg_quality': np.mean([r['quality_score'] for r in recent]),
+            'total_trades': sum([r['trades'] for r in recent]),
+            'optimization_count': len([r for r in recent if r.get('optimized', False)])
         }
-    
-    def _analyze_sharpe_trend(self) -> Dict:
-        """分析夏普比率趋势"""
-        sharpes = [r['performance'].get('execution_rate', 0) for r in self.weekly_results[-4:]]
-        return {
-            'trend': 'improving' if sharpes[-1] > sharpes[0] else 'degrading',
-            'latest': sharpes[-1] if sharpes else 0
-        }
-    
-    def _identify_issues(self) -> List[str]:
-        """识别问题"""
-        issues = []
-        recent = self.weekly_results[-4:]
-        
-        avg_return = np.mean([r['backtest']['total_return'] for r in recent])
-        if avg_return < 0:
-            issues.append("近期收益为负")
-        
-        avg_drawdown = np.mean([r['backtest']['max_drawdown'] for r in recent])
-        if avg_drawdown < -0.1:
-            issues.append("回撤过大")
-        
-        return issues
-    
-    def _generate_improvements(self, issues: List[str]) -> Dict:
-        """生成改进方案"""
-        improvements = {'sharpe_improvement': 0}
-        
-        if "回撤过大" in issues:
-            improvements['stop_loss'] = -0.05  # 收紧止损
-            improvements['sharpe_improvement'] += 0.15
-        
-        if "近期收益为负" in issues:
-            improvements['min_confidence'] = 0.7  # 提高置信度要求
-            improvements['sharpe_improvement'] += 0.1
-        
-        return improvements
-    
-    def _apply_improvements(self, improvements: Dict):
-        """应用改进"""
-        # 更新配置
-        if 'stop_loss' in improvements:
-            logger.info(f"止损线调整: -7% -> {improvements['stop_loss']:.0%}")
-        
-        if 'min_confidence' in improvements:
-            logger.info(f"最低置信度调整: 60% -> {improvements['min_confidence']:.0%}")
-    
-    def _print_weekly_plan(self, plan: WeeklyStrategy):
-        """打印周计划"""
-        print("\n" + "="*60)
-        print("本周交易计划")
-        print("="*60)
-        print(f"交易周期: {plan.week_start.strftime('%m月%d日')} - {plan.week_end.strftime('%m月%d日')}")
-        print(f"市场环境: {plan.market_regime}")
-        print(f"操作偏向: {plan.overall_bias}")
-        print(f"\n目标股票池:")
-        for i, stock in enumerate(plan.target_stocks, 1):
-            print(f"  {i}. {stock}")
-        print(f"\n风控参数:")
-        print(f"  最大持仓: {plan.max_positions}只")
-        print(f"  单票上限: {plan.max_single_position:.0%}")
-        print(f"  止损线: {plan.stop_loss:.0%}")
-        print(f"  止盈线: {plan.take_profit:.0%}")
-        print("="*60 + "\n")
-    
-    def _print_reflection_report(self, result: Dict):
-        """打印反思报告"""
-        print("\n" + "="*60)
-        print("本周反思报告")
-        print("="*60)
-        print(f"本周绩效:")
-        print(f"  信号数量: {result['performance']['total_signals']}")
-        print(f"  执行数量: {result['performance']['executed']}")
-        print(f"  执行率: {result['performance']['execution_rate']:.1%}")
-        print(f"\n回测对比:")
-        print(f"  夏普差异: {result['comparison']['sharpe_diff']:+.2f}")
-        print(f"  收益差异: {result['comparison']['return_diff']:+.2%}")
-        print(f"\n发现问题:")
-        for issue in result['reflection']['issues']:
-            print(f"  - {issue}")
-        print(f"\n改进建议:")
-        for suggestion in result['reflection']['suggestions']:
-            print(f"  - {suggestion}")
-        print("="*60 + "\n")
 
 
 def main():
     """主入口"""
-    parser = argparse.ArgumentParser(description='ThermoSys 端到端闭环系统')
-    parser.add_argument('--mode', type=str, required=True, 
-                       choices=['monday', 'daily', 'friday', 'weekend', 'full'],
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='ThermoSys 全自动策略进化系统')
+    parser.add_argument('--mode', type=str, required=True,
+                       choices=['daily', 'weekly', 'full', 'demo'],
                        help='运行模式')
-    parser.add_argument('--data', type=str, help='数据文件路径')
+    parser.add_argument('--days', type=int, default=60,
+                       help='回测天数（用于demo模式）')
     
     args = parser.parse_args()
     
-    loop = EndToEndLoop()
+    loop = AutoEvolutionLoop()
     
-    # 模拟数据
-    mock_data = {
-        'market_rsi': -1.2,
-        'market_coherence': 0.65,
-        'market_clarity': 0.7,
-        'market_ipv': 1.5,
-        'market_entropy': 0.4,
-        'stock_pool': ['000001', '000002', '600000', '000858', '002415'],
-        'thermo_states': {
-            '000001': {'rsi': -2.3, 'coherence': 0.75, 'clarity': 0.8, 'entropy': 0.3, 'ipv': 1.8},
-            '000002': {'rsi': -1.5, 'coherence': 0.6, 'clarity': 0.5, 'entropy': 0.5, 'ipv': 1.2},
-            '600000': {'rsi': -0.8, 'coherence': 0.4, 'clarity': 0.3, 'entropy': 0.7, 'ipv': 0.8}
-        }
-    }
+    if args.mode == 'demo':
+        # 生成模拟数据进行演示
+        print("\n生成模拟数据...")
+        np.random.seed(42)
+        dates = pd.date_range(end=datetime.now(), periods=args.days, freq='B')
+        n = len(dates)
+        
+        stocks = ['000001', '000002', '600000']
+        price_data = pd.DataFrame(index=dates)
+        
+        for stock in stocks:
+            returns = np.random.randn(n) * 0.02
+            price_data[stock] = 100 * (1 + returns).cumprod()
+        
+        thermo_data = {}
+        for stock in stocks:
+            thermo_data[stock] = pd.DataFrame({
+                'rsi': np.random.randn(n),
+                'coherence': np.random.rand(n),
+                'clarity': np.random.rand(n),
+                'entropy': np.random.rand(n),
+                'ipv': np.random.randn(n) * 2
+            }, index=dates)
+        
+        # 模拟3天的每日循环
+        print("\n运行3天策略循环...")
+        for i in range(3):
+            day_data = {
+                'thermo_states': {
+                    stock: thermo_data[stock].iloc[-(3-i)].to_dict()
+                    for stock in stocks
+                }
+            }
+            
+            report = loop.run_daily_cycle(day_data, price_data, thermo_data)
+            print(f"\nDay {i+1} 报告:")
+            print(f"  信号数量: {len(report['signals'])}")
+            if 'backtest' in report:
+                print(f"  回测夏普: {report['backtest']['sharpe_ratio']:.2f}")
+        
+        # 运行每周优化
+        print("\n运行每周优化...")
+        weekly_report = loop.run_weekly_optimization(price_data, thermo_data)
+        print(f"优化应用: {weekly_report.get('optimization_applied', False)}")
+        
+        # 运行完整回测
+        print("\n运行完整回测...")
+        full_report = loop.run_full_backtest(price_data, thermo_data)
+        print(f"\n回测结果:")
+        print(f"  总收益: {full_report['performance']['total_return']:.2%}")
+        print(f"  夏普: {full_report['performance']['sharpe_ratio']:.2f}")
+        print(f"  最大回撤: {full_report['performance']['max_drawdown']:.2%}")
+        
+        # 输出绩效摘要
+        print("\n绩效摘要:")
+        summary = loop.get_performance_summary()
+        for key, value in summary.items():
+            print(f"  {key}: {value}")
     
-    if args.mode == 'monday':
-        loop.run_monday_routine(mock_data)
     elif args.mode == 'daily':
-        loop.run_daily_routine(mock_data)
-    elif args.mode == 'friday':
-        loop.run_friday_routine(mock_data)
-    elif args.mode == 'weekend':
-        loop.run_weekend_evolution()
+        print("运行每日策略循环...")
+        # 实际运行时从数据源获取数据
+        print("注意：需要传入实际市场数据")
+    
+    elif args.mode == 'weekly':
+        print("运行每周优化...")
+        print("注意：需要传入历史数据")
+    
     elif args.mode == 'full':
-        # 运行完整周期模拟
-        print("\n模拟完整一周运行...\n")
-        loop.run_monday_routine(mock_data)
-        loop.run_daily_routine(mock_data)
-        loop.run_friday_routine(mock_data)
-        loop.run_weekend_evolution()
+        print("运行完整回测...")
+        print("注意：需要传入完整历史数据")
 
 
 if __name__ == '__main__':
