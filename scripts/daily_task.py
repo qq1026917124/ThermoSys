@@ -4,6 +4,27 @@ ThermoSys 每日自动运行脚本
 """
 import sys
 import os
+import io
+
+# ========== 编码修复（必须在最前面） ==========
+# 修复Windows控制台的UTF-8编码问题
+try:
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    kernel32.SetConsoleCP(65001)
+    kernel32.SetConsoleOutputCP(65001)
+except Exception:
+    pass
+
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+try:
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+except Exception:
+    pass
+# ===========================================
+
 from pathlib import Path
 from datetime import datetime
 from loguru import logger
@@ -23,7 +44,6 @@ logger.add(
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from thermo_sys.execution import AutoEvolutionLoop
-from thermo_sys.data.multi_source import create_multi_source_manager
 
 
 def run_daily_task():
@@ -34,7 +54,7 @@ def run_daily_task():
     每日收盘后运行（建议 15:30-16:00）
     """
     logger.info("=" * 70)
-    logger.info(f"ThermoSys 每日任务开始 - {datetime.now()}")
+    logger.info(f"ThermoSys Daily Task Started - {datetime.now()}")
     logger.info("=" * 70)
     
     try:
@@ -76,39 +96,39 @@ def run_daily_task():
         }
         
         # 运行每日循环
-        logger.info("运行每日策略循环...")
+        logger.info("Running daily strategy cycle...")
         report = loop.run_daily_cycle(market_data, price_data, thermo_data)
         
-        logger.info(f"生成 {len(report['signals'])} 个信号")
+        logger.info(f"Generated {len(report['signals'])} signals")
         if 'backtest' in report:
-            logger.info(f"回测夏普: {report['backtest']['sharpe_ratio']:.2f}")
+            logger.info(f"Backtest Sharpe: {report['backtest']['sharpe_ratio']:.2f}")
         
         # 检查是否需要每周优化（周五）
         if datetime.now().weekday() == 4:  # 周五
-            logger.info("今天是周五，运行每周优化...")
+            logger.info("Friday detected, running weekly optimization...")
             weekly_report = loop.run_weekly_optimization(price_data, thermo_data)
-            logger.info(f"优化应用: {weekly_report.get('optimization_applied', False)}")
+            logger.info(f"Optimization applied: {weekly_report.get('optimization_applied', False)}")
         
         # 检查是否需要月度深度回测（每月第一个交易日）
         if datetime.now().day <= 5:
-            logger.info("运行月度深度回测...")
+            logger.info("Running monthly deep backtest...")
             full_report = loop.run_full_backtest(price_data, thermo_data)
-            logger.info(f"总收益: {full_report['performance']['total_return']:.2%}")
-            logger.info(f"夏普: {full_report['performance']['sharpe_ratio']:.2f}")
+            logger.info(f"Total return: {full_report['performance']['total_return']:.2%}")
+            logger.info(f"Sharpe: {full_report['performance']['sharpe_ratio']:.2f}")
         
         # 输出绩效摘要
         summary = loop.get_performance_summary()
-        logger.info(f"近期平均夏普: {summary.get('avg_sharpe', 0):.2f}")
-        logger.info(f"近期平均质量: {summary.get('avg_quality', 0):.2f}")
+        logger.info(f"Recent avg Sharpe: {summary.get('avg_sharpe', 0):.2f}")
+        logger.info(f"Recent avg quality: {summary.get('avg_quality', 0):.2f}")
         
         logger.info("=" * 70)
-        logger.info("每日任务完成")
+        logger.info("Daily task completed successfully")
         logger.info("=" * 70)
         
         return True
         
     except Exception as e:
-        logger.error(f"任务执行失败: {e}", exc_info=True)
+        logger.error(f"Task execution failed: {e}", exc_info=True)
         return False
 
 

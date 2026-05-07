@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-05-08T03:02:28.895950",
+  "timestamp": "2026-05-08T03:07:33.621057",
   "overall_status": "healthy",
   "checks": {
     "log_file": {
       "status": "ok",
       "latest_file": "logs\\daily_run_2026-05-08.log",
-      "age_hours": 0.0,
+      "age_hours": 0.1,
       "size_kb": 27.3
     },
     "report": {
       "status": "ok",
       "latest_file": "data\\auto_loop\\report_20260508.json",
-      "age_hours": 0.0,
+      "age_hours": 0.1,
       "signal_count": 3
     },
     "backtest_history": {

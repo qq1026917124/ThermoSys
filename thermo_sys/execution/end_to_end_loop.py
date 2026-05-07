@@ -12,6 +12,26 @@
 """
 import os
 import sys
+import io
+
+# ========== 编码修复（Windows控制台） ==========
+try:
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    kernel32.SetConsoleCP(65001)
+    kernel32.SetConsoleOutputCP(65001)
+except Exception:
+    pass
+
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+try:
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+except Exception:
+    pass
+# =============================================
+
 import json
 import yaml
 import numpy as np
